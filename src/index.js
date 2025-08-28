@@ -2,6 +2,8 @@
 // import { DB_NAME } from "./constants";
 // import express from "express";
 // const app = express();
+// require('dotenv').config();
+
 
 // (async() => {
 //     try {
@@ -19,3 +21,8 @@
 //         console.log(Error);
 //     }
 // })()
+import connectDB from "./db/index.js";
+import dotenv from "dotenv";
+dotenv.config({ quiet: true });
+
+connectDB();
