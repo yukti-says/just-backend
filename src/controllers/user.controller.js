@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/ayncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/User.model.js";
 import isValidEmail from "../utils/EmailValidation.js";
-import { fileUpload } from "../utils/fileUpload.js";
+import { uploadOnCloudinary } from "../utils/fileUpload.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 
@@ -46,8 +46,8 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     // upload them to cloudinary,check avatar
-    const avatar = await fileUpload(avatarLocalPath);
-    const coverImage = await fileUpload(coverImageLocalPath);
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
     // checking avatar upload or not
     if (!avatar) {
