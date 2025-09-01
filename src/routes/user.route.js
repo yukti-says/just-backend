@@ -2,7 +2,8 @@ import { Router } from "express";
 import {
   loginUser,
   registerUser,
-  loggedOutUser,
+    loggedOutUser,
+    refreshAccessToken,
 } from "../controllers/user.controller.js";
 import upload from "../middlewares/fileUpload.multer.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -24,4 +25,9 @@ router.route("/login").post(
 
 // sucured routes
 router.route("/logout").post(verifyJWT, loggedOutUser);
+
+//& for if the user wants to have a new accesstoken using refreshToken
+router.route("/refresh-token").post(refreshAccessToken); // why i have not written verifyJWT here   
+
+
 export default router;
