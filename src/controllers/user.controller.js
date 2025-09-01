@@ -119,11 +119,11 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 
-const loginUser = asyncHandler(async () => {
+const loginUser = asyncHandler(async (req,res) => {
   // request body se data
   const { email, password, username } = req.body;
   // check username or email is there or not
-  if (!username || !email) {
+  if (!(username || email)) {
     throw new ApiError(400, "Username or email is required");
   }
   // find the user in the db
