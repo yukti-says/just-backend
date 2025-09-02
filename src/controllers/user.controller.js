@@ -326,7 +326,33 @@ const updateAccount = asyncHandler(async (req, res) => {
 
     
 
- })
+})
+ 
+
+//* files update here the multer middleware will come into place and the user who is logged in two middleware for routing
+const updateUserAvatar = asyncHandler(
+    async (req,res) => {
+        //& get the user file with multer
+        const avatarLocalPath = req.file?.path
+        if (!avatarLocalPath) throw new ApiError(400, "Avatar file is required");
+
+        // upload it to cloudinary
+        const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+        if (!avatar.url) throw new ApiError(500, "Avatar upload failed");
+
+        //& update
+        await User.findByIdAndUpdate(
+            req.user?._id,
+            {
+                $set: { avatar: avatar.url }
+            },
+            { new: true }
+        ).select("-password");
+
+        return res.status(200).json(new ApiResponse(200, "Avatar updated successfully", { avatar: avatar.url }));
+    }
+)
 export {
   registerUser,
   loginUser,
@@ -334,5 +360,6 @@ export {
   refreshAccessToken,
   changeCurrentPassword,
     getCurrentUser,
-    updateAccount
+    updateAccount,
+    updateUserAvatar
 };
