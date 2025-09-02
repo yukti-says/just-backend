@@ -342,7 +342,7 @@ const updateUserAvatar = asyncHandler(
         if (!avatar.url) throw new ApiError(500, "Avatar upload failed");
 
         //& update
-        await User.findByIdAndUpdate(
+        const user = await User.findByIdAndUpdate(
             req.user?._id,
             {
                 $set: { avatar: avatar.url }
@@ -350,7 +350,7 @@ const updateUserAvatar = asyncHandler(
             { new: true }
         ).select("-password");
 
-        return res.status(200).json(new ApiResponse(200, "Avatar updated successfully", { avatar: avatar.url }));
+        return res.status(200).json(new ApiResponse(200, "Avatar updated successfully", { user }));
     }
 )
 
@@ -360,15 +360,15 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
   if (!coverLocalPath) throw new ApiError(400, "Cover image file is required");
 
   // upload it to cloudinary
-  const cover = await uploadOnCloudinary(coverLocalPath);
+  const coverImage = await uploadOnCloudinary(coverLocalPath);
 
-  if (!cover.url) throw new ApiError(500, "Cover image upload failed");
+  if (!coverImage.url) throw new ApiError(500, "Cover image upload failed");
 
   //& update
-  await User.findByIdAndUpdate(
+   const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
-      $set: { cover: cover.url },
+      $set: { coverImage: coverImage.url },
     },
     { new: true }
   ).select("-password");
@@ -377,10 +377,12 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     .status(200)
     .json(
       new ApiResponse(200, "Cover image updated successfully", {
-        cover: cover.url,
+        user,
       })
     );
 });
+
+
 
 
 export {
