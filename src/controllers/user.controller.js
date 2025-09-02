@@ -288,11 +288,51 @@ const getCurrentUser = asyncHandler(async (req, res) => {
    return res.status(200).json(new ApiResponse(200, "Current user fetched successfully", req.user));
 });
 
+
+//* update account if you want to update files so create another seperate files for them
+const updateAccount = asyncHandler(async (req, res) => {
+    const {  fullname, email } = req.body;
+    
+    if (!fullname || !email) throw new ApiError(400, "Fullname and email are required");
+
+    //* find the user
+    // const user = await User.findById(req.user?._id);
+    // if (!user) throw new ApiError(404, "User not found");
+
+    if (!isValidEmail(email)) throw new ApiError(400, "Invalid email format");
+
+    //
+    
+    //todo or
+
+    const user = User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                fullname:fullname,
+                email:email
+            }
+
+        },
+        {new:true}
+    ).select("-password")
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, "User updated successfully", user));
+    
+
+
+
+    
+
+ })
 export {
   registerUser,
   loginUser,
   loggedOutUser,
   refreshAccessToken,
   changeCurrentPassword,
-  getCurrentUser
+    getCurrentUser,
+    updateAccount
 };
