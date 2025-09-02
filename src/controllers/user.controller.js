@@ -256,9 +256,36 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 
 })
+
+const changeCurrentPassword = asyncHandler(
+     async(req,res) =>  {
+        //*things you have to decide is the how many field u are going to take from {req.body}
+        const { oldPassword, newPassword , confirmPassword } = req.body;
+
+        //* find the old user since user is able to change password thus he is logged in and in middleware we have req.use so from here we can get req._id
+
+        const user = await User.findById(req.user._id);
+
+         const isPasswordCorrectthistime =   await user.isPasswordCorrect(oldPassword); //returns true or false
+
+        if (!isPasswordCorrectthistime) throw new ApiError(400, "Old password is incorrect");
+        
+        if (newPassword !== confirmPassword) throw new ApiError(400, "New password and confirm password do not match");
+
+        // * till now your old password was correct now u have to set up new password
+
+        user.password = newPassword;
+        //* this will hash the new password before saving and in .pre method in user.model.js file
+        await user.save({ validateBeforeSave: false});
+
+        return res.status(200).json(new ApiResponse(200, "Password changed successfully"));
+    }
+)
+
 export {
-    registerUser,
-    loginUser,
-    loggedOutUser,
-    refreshAccessToken
+  registerUser,
+  loginUser,
+  loggedOutUser,
+  refreshAccessToken,
+  changeCurrentPassword,
 };
