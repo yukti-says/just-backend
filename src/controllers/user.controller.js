@@ -452,7 +452,54 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Channel fetched successfully", channel[0]));
 });
 
+//? nested lookup 
+const getUserWatchHistory = asyncHandler(async (req, res) => {
+  //todo req.user._id in mongodb we get a string but as we use mongoose so mongoose converts internally and gives us the id
+  //todo so convert this id bz aggregation ka code mongoose help nhi karta h so we by ourself have to manage this
+  const user = await User.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(req.user._id),
+      },
+    }, //lookup to go into watch history
+    {
+      $lookup: {
+        from: "Video",
+        localField: "watchHistory",
+        foreignField: "_id",
+        as: "watchHistory",
+        //! now pipeline for getting the owners
+        pipeline: [{
+          $lookup: {
+            from: "users",
+            localField: "owner",
+            foreignField: "_id",
+            as: "owner",
+            //! this will go into owner field only not outside
+            pipeline: [{
+              $project: {
+                fullname: 1,
+                username: 1,
+                avatar:1,
+              }
+            }]
+          }
+        },
+          {
+            $addFields: {
+              owner: {
+                $arrayElemAt: ["$owner", 0]
+                //? or-> $first:"$owner"
+              
+            }
+          }
+        }]
+      },
+    },
+  ]);
 
+  return res.status(200).json(new ApiResponse(200, "Watch history fetched successfully", user[0].watchHistory));
+})
 
 export {
   registerUser,
@@ -465,4 +512,5 @@ export {
   updateUserAvatar,
   updateUserCoverImage,
   getUserChannelProfile,
+  getUserWatchHistory,
 };
