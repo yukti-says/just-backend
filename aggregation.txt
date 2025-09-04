@@ -1,0 +1,21 @@
+pipelines -> stages
+first stage me jitna data liya h { for example if 100 ka data h and you took 50 out of it} so next stage ke liye yahi 50 data original data hooga
+
+pipelines are written in array
+[
+    {}, //first pipeline
+    {}, //second pipeline
+    {} //third pipeline
+]
+
+//first me->$match 
+//lookup-> for join 
+
+and the return value is get into array
+
+so in array->object->first_value 
+
+in next pipeline
+$addFields:{
+    new fields add karna 
+}
